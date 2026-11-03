@@ -1,16 +1,9 @@
 package io.github.ellamosi.mchelper
 
-class InputController(private var mcDeviceState: MCDeviceState) {
-    companion object {
-        private const val TAG = "InputController"
-        private const val TV_INPUT = "optical2"
-    }
-
+class InputController(private val state: MCDeviceState) {
     fun setInput() {
-        if (!isOnTvInput()) MCApi.setInput(TV_INPUT)
+        if (!isOnTvInput()) MCApi.setInput(Config.input)
     }
 
-    fun isOnTvInput() : Boolean {
-        return TV_INPUT == mcDeviceState.input()
-    }
+    fun isOnTvInput(): Boolean = Config.input == state.input()
 }

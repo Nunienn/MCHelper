@@ -39,7 +39,9 @@ class BootReceiver : BroadcastReceiver() {
                 pendingIntent
             )
 
+            // Démarrage à froid de la Shield : allume aussi l'ampli si l'écran est actif.
             val serviceIntent = Intent(context, MCHService::class.java)
+            serviceIntent.putExtra("ACTION", "BOOT")
             startForegroundService(context, serviceIntent)
         }
     }

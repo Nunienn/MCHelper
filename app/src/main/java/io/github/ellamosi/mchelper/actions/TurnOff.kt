@@ -4,6 +4,7 @@ import io.github.ellamosi.mchelper.*
 
 class TurnOff : MCHAction() {
     override fun execute(power: PowerController, input: InputController, volume: VolumeController) {
-        if (input.isOnTvInput()) power.turnOff()
+        // N'éteint que si l'ampli est sur l'entrée de la Shield (ne coupe pas une écoute de musique).
+        if (Config.autoOff && input.isOnTvInput()) power.turnOff()
     }
 }
