@@ -46,9 +46,28 @@ Remplacez `192.168.1.50` et `optical1` par vos valeurs.
 
 Pour changer un réglage plus tard : relancez la commande `start-foreground-service` avec seulement l'extra à modifier.
 
-## 6. Tester / dépanner
+## 6. Volume de l'ampli avec la télécommande Shield (par le réseau)
+Les touches volume de la télécommande Shield sont interceptées et envoyées à l'ampli ; le volume de la Shield ne bouge plus.
+1. Sur la Shield : Paramètres > Préférences de l'appareil > Écran et son > Contrôle du volume → revenir au réglage par défaut (volume de la Shield, ni IR ni CEC).
+2. Mettez le volume de la Shield au maximum (avant l'étape 3, ensuite les touches n'agissent plus dessus).
+3. Activez le service d'accessibilité :
+```
+adb shell settings put secure enabled_accessibility_services io.github.ellamosi.mchelper/io.github.ellamosi.mchelper.VolumeKeyService
+adb shell settings put secure accessibility_enabled 1
+```
+Pour le désactiver : `adb shell settings delete secure enabled_accessibility_services`
+
+| Réglage | Rôle | Défaut |
+|---|---|---|
+| `volumeRelay` | Touches volume → ampli | true |
+| `volumeStep` | Crans d'ampli par appui (1 cran = 0,5 dB) | 3 |
+| `maxVolumePct` | Volume jamais dépassé via la télécommande, en % du max | 60 |
+
+Exemple : `adb shell am start-foreground-service -n io.github.ellamosi.mchelper/.MCHService --ei volumeStep 4 --ei maxVolumePct 70`
+
+## 7. Tester / dépanner
 - Mettez la Shield en veille, puis réveillez-la : l'ampli doit s'allumer en quelques secondes.
-- Journaux : `adb logcat -s MchService MCApi PowerController VolumeController MCHWorker Config`
+- Journaux : `adb logcat -s MchService MCApi PowerController VolumeController VolumeRelay MCHWorker Config`
 
 ## Réglage du plafond de volume
 Sur les amplis Yamaha, le volume avance par pas de 0,5 dB : 30 % du max correspond à un volume faible.

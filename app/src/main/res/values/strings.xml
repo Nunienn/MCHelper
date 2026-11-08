@@ -2,4 +2,5 @@
     <string name="app_name">MCHelper</string>
     <string name="notification_title">MCHelper</string>
     <string name="notification_message">Allume l\'ampli Yamaha avec la Shield</string>
+    <string name="volume_service_description">Envoie les touches volume de la télécommande à l\'ampli Yamaha.</string>
 </resources>

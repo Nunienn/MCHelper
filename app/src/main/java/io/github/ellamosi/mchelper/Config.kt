@@ -18,12 +18,18 @@ object Config {
     private const val KEY_INPUT = "input"
     private const val KEY_MAX_START_VOLUME_PCT = "maxStartVolumePct"
     private const val KEY_AUTO_OFF = "autoOff"
+    private const val KEY_VOLUME_RELAY = "volumeRelay"
+    private const val KEY_VOLUME_STEP = "volumeStep"
+    private const val KEY_MAX_VOLUME_PCT = "maxVolumePct"
 
     // Valeurs par défaut
     private const val DEFAULT_IP = "10.0.0.7"
     private const val DEFAULT_INPUT = "optical1"
     private const val DEFAULT_MAX_START_VOLUME_PCT = 30   // % du volume max de l'ampli
     private const val DEFAULT_AUTO_OFF = true
+    private const val DEFAULT_VOLUME_RELAY = true
+    private const val DEFAULT_VOLUME_STEP = 3          // crans d'ampli par appui (1 cran = 0,5 dB)
+    private const val DEFAULT_MAX_VOLUME_PCT = 60      // plafond absolu via la télécommande
 
     private fun prefs() =
         MCHelper.instance.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -40,6 +46,15 @@ object Config {
 
     /** Mettre l'ampli en veille quand la Shield se met en veille. */
     val autoOff: Boolean get() = prefs().getBoolean(KEY_AUTO_OFF, DEFAULT_AUTO_OFF)
+
+    /** Les touches volume de la Shield pilotent le volume de l'ampli. */
+    val volumeRelay: Boolean get() = prefs().getBoolean(KEY_VOLUME_RELAY, DEFAULT_VOLUME_RELAY)
+
+    /** Nombre de crans d'ampli par appui (1 à 20). */
+    val volumeStep: Int get() = prefs().getInt(KEY_VOLUME_STEP, DEFAULT_VOLUME_STEP).coerceIn(1, 20)
+
+    /** Volume jamais dépassé via la télécommande, en % du volume max de l'ampli (10 à 100). */
+    val maxVolumePct: Int get() = prefs().getInt(KEY_MAX_VOLUME_PCT, DEFAULT_MAX_VOLUME_PCT).coerceIn(10, 100)
 
     /** Lit les réglages éventuellement passés en extras de l'intent ADB et les enregistre. */
     fun updateFromIntent(intent: Intent?) {
@@ -65,9 +80,22 @@ object Config {
             editor.putBoolean(KEY_AUTO_OFF, intent.getBooleanExtra(KEY_AUTO_OFF, DEFAULT_AUTO_OFF))
             changed = true
         }
+        if (intent.hasExtra(KEY_VOLUME_RELAY)) {
+            editor.putBoolean(KEY_VOLUME_RELAY, intent.getBooleanExtra(KEY_VOLUME_RELAY, DEFAULT_VOLUME_RELAY))
+            changed = true
+        }
+        if (intent.hasExtra(KEY_VOLUME_STEP)) {
+            editor.putInt(KEY_VOLUME_STEP, intent.getIntExtra(KEY_VOLUME_STEP, DEFAULT_VOLUME_STEP).coerceIn(1, 20))
+            changed = true
+        }
+        if (intent.hasExtra(KEY_MAX_VOLUME_PCT)) {
+            editor.putInt(KEY_MAX_VOLUME_PCT, intent.getIntExtra(KEY_MAX_VOLUME_PCT, DEFAULT_MAX_VOLUME_PCT).coerceIn(10, 100))
+            changed = true
+        }
         if (changed) {
             editor.apply()
-            Log.i(TAG, "Réglages : ip=$ip input=$input maxStartVolumePct=$maxStartVolumePct autoOff=$autoOff")
+            Log.i(TAG, "Réglages : ip=$ip input=$input maxStartVolumePct=$maxStartVolumePct autoOff=$autoOff " +
+                "volumeRelay=$volumeRelay volumeStep=$volumeStep maxVolumePct=$maxVolumePct")
         }
     }
 
