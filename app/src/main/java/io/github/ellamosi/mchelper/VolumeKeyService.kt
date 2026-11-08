@@ -1,6 +1,7 @@
 package io.github.ellamosi.mchelper
 
 import android.accessibilityservice.AccessibilityService
+import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 
@@ -11,6 +12,11 @@ import android.view.accessibility.AccessibilityEvent
  */
 class VolumeKeyService : AccessibilityService() {
 
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        Log.i("VolumeRelay", "Service d'accessibilité actif")
+    }
+
     override fun onKeyEvent(event: KeyEvent): Boolean {
         val direction = when (event.keyCode) {
             KeyEvent.KEYCODE_VOLUME_UP -> 1
@@ -19,7 +25,10 @@ class VolumeKeyService : AccessibilityService() {
         }
         if (!Config.volumeRelay || Config.ip.isEmpty()) return false
         // Appui et répétitions (touche maintenue) : un cran à chaque fois. Le relâchement est juste absorbé.
-        if (event.action == KeyEvent.ACTION_DOWN) VolumeRelay.press(direction)
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            Log.i("VolumeRelay", "Touche volume ${if (direction > 0) "+" else "-"}")
+            VolumeRelay.press(direction)
+        }
         return true
     }
 
