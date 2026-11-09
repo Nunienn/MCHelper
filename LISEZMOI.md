@@ -61,7 +61,7 @@ Pour le désactiver : `adb shell settings delete secure enabled_accessibility_se
 |---|---|---|
 | `volumeRelay` | Touches volume → ampli | true |
 | `volumeStep` | Crans d'ampli par appui (1 cran = 0,5 dB) | 3 |
-| `maxVolumePct` | Volume jamais dépassé via la télécommande, en % du max | 60 |
+| `maxVolumePct` | Volume jamais dépassé via la télécommande, en % du max | 80 |
 
 Exemple : `adb shell am start-foreground-service -n io.github.ellamosi.mchelper/.MCHService --ei volumeStep 4 --ei maxVolumePct 70`
 

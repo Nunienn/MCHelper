@@ -29,7 +29,7 @@ object Config {
     private const val DEFAULT_AUTO_OFF = true
     private const val DEFAULT_VOLUME_RELAY = true
     private const val DEFAULT_VOLUME_STEP = 3          // crans d'ampli par appui (1 cran = 0,5 dB)
-    private const val DEFAULT_MAX_VOLUME_PCT = 60      // plafond absolu via la télécommande
+    private const val DEFAULT_MAX_VOLUME_PCT = 80      // plafond absolu via la télécommande
 
     private fun prefs() =
         MCHelper.instance.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
