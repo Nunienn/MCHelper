@@ -41,7 +41,7 @@ Remplacez `192.168.1.50` et `optical1` par vos valeurs.
 |---|---|---|
 | `ip` | IP locale de l'ampli (refusée si ce n'est pas une IP privée valide) | aucune |
 | `input` | Entrée sélectionnée à l'allumage | optical1 |
-| `maxStartVolumePct` | Plafond du volume à l'allumage, en % du volume max de l'ampli (0 = désactivé) | 30 |
+| `maxStartVolumePct` | Plafond du volume à l'allumage, en % du volume max de l'ampli (0 = désactivé) | 80 |
 | `autoOff` | Veille de l'ampli avec la Shield | true |
 
 Pour changer un réglage plus tard : relancez la commande `start-foreground-service` avec seulement l'extra à modifier.
@@ -65,9 +65,21 @@ Pour le désactiver : `adb shell settings delete secure enabled_accessibility_se
 
 Exemple : `adb shell am start-foreground-service -n io.github.ellamosi.mchelper/.MCHService --ei volumeStep 4 --ei maxVolumePct 70`
 
-## 7. Tester / dépanner
+## 7. Écran de projection (Shelly 2PM en mode volet)
+- Réveil de la Shield → écran descendu ; mise en veille → écran remonté.
+- Prérequis : Shelly calibré, et « ouvrir » = écran remonté (sinon inverser le sens dans les réglages du Shelly).
+
+| Réglage | Rôle | Défaut |
+|---|---|---|
+| `screenIp` | IP du Shelly (`off` = écran non piloté) | 10.0.0.36 |
+| `screenDownPos` | Position écran descendu (0 = fin de course basse) | 0 |
+| `screenUpPos` | Position écran remonté (100 = fin de course haute) | 100 |
+
+Exemple pour s'arrêter juste avant les butées : `--ei screenDownPos 2 --ei screenUpPos 98`
+
+## 8. Tester / dépanner
 - Mettez la Shield en veille, puis réveillez-la : l'ampli doit s'allumer en quelques secondes.
-- Journaux : `adb logcat -s MchService MCApi PowerController VolumeController VolumeRelay MCHWorker Config`
+- Journaux : `adb logcat -s MchService MCApi PowerController VolumeController VolumeRelay ScreenController MCHWorker Config`
 
 ## Réglage du plafond de volume
 Sur les amplis Yamaha, le volume avance par pas de 0,5 dB : 30 % du max correspond à un volume faible.

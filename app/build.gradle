@@ -8,8 +8,8 @@ android {
         applicationId "io.github.ellamosi.mchelper"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 3
-        versionName "2.1"
+        versionCode 4
+        versionName "2.2"
     }
     signingConfigs {
         // Clé fixe : permet de mettre à jour l'appli (adb install -r) d'une compilation à l'autre

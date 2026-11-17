@@ -21,15 +21,21 @@ object Config {
     private const val KEY_VOLUME_RELAY = "volumeRelay"
     private const val KEY_VOLUME_STEP = "volumeStep"
     private const val KEY_MAX_VOLUME_PCT = "maxVolumePct"
+    private const val KEY_SCREEN_IP = "screenIp"
+    private const val KEY_SCREEN_DOWN_POS = "screenDownPos"
+    private const val KEY_SCREEN_UP_POS = "screenUpPos"
 
     // Valeurs par défaut
     private const val DEFAULT_IP = "10.0.0.7"
     private const val DEFAULT_INPUT = "optical1"
-    private const val DEFAULT_MAX_START_VOLUME_PCT = 30   // % du volume max de l'ampli
+    private const val DEFAULT_MAX_START_VOLUME_PCT = 80   // % du volume max de l'ampli
     private const val DEFAULT_AUTO_OFF = true
     private const val DEFAULT_VOLUME_RELAY = true
     private const val DEFAULT_VOLUME_STEP = 3          // crans d'ampli par appui (1 cran = 0,5 dB)
     private const val DEFAULT_MAX_VOLUME_PCT = 80      // plafond absolu via la télécommande
+    private const val DEFAULT_SCREEN_IP = "10.0.0.36"  // Shelly 2PM de l'écran ("off" = désactivé)
+    private const val DEFAULT_SCREEN_DOWN_POS = 0      // position Shelly écran déroulé (0 = fermé)
+    private const val DEFAULT_SCREEN_UP_POS = 100      // position Shelly écran remonté (100 = ouvert)
 
     private fun prefs() =
         MCHelper.instance.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -55,6 +61,17 @@ object Config {
 
     /** Volume jamais dépassé via la télécommande, en % du volume max de l'ampli (10 à 100). */
     val maxVolumePct: Int get() = prefs().getInt(KEY_MAX_VOLUME_PCT, DEFAULT_MAX_VOLUME_PCT).coerceIn(10, 100)
+
+    /** IP du Shelly qui pilote l'écran (vide = écran non piloté). */
+    val screenIp: String
+        get() = (prefs().getString(KEY_SCREEN_IP, DEFAULT_SCREEN_IP) ?: DEFAULT_SCREEN_IP)
+            .let { if (it == "off") "" else it }
+
+    /** Position Shelly (0-100) de l'écran déroulé. */
+    val screenDownPos: Int get() = prefs().getInt(KEY_SCREEN_DOWN_POS, DEFAULT_SCREEN_DOWN_POS).coerceIn(0, 100)
+
+    /** Position Shelly (0-100) de l'écran remonté. */
+    val screenUpPos: Int get() = prefs().getInt(KEY_SCREEN_UP_POS, DEFAULT_SCREEN_UP_POS).coerceIn(0, 100)
 
     /** Lit les réglages éventuellement passés en extras de l'intent ADB et les enregistre. */
     fun updateFromIntent(intent: Intent?) {
@@ -92,10 +109,26 @@ object Config {
             editor.putInt(KEY_MAX_VOLUME_PCT, intent.getIntExtra(KEY_MAX_VOLUME_PCT, DEFAULT_MAX_VOLUME_PCT).coerceIn(10, 100))
             changed = true
         }
+        intent.getStringExtra(KEY_SCREEN_IP)?.trim()?.let {
+            if (it == "off" || isValidLocalIp(it)) {
+                editor.putString(KEY_SCREEN_IP, it); changed = true
+            } else {
+                Log.e(TAG, "IP du Shelly refusée : $it")
+            }
+        }
+        if (intent.hasExtra(KEY_SCREEN_DOWN_POS)) {
+            editor.putInt(KEY_SCREEN_DOWN_POS, intent.getIntExtra(KEY_SCREEN_DOWN_POS, DEFAULT_SCREEN_DOWN_POS).coerceIn(0, 100))
+            changed = true
+        }
+        if (intent.hasExtra(KEY_SCREEN_UP_POS)) {
+            editor.putInt(KEY_SCREEN_UP_POS, intent.getIntExtra(KEY_SCREEN_UP_POS, DEFAULT_SCREEN_UP_POS).coerceIn(0, 100))
+            changed = true
+        }
         if (changed) {
             editor.apply()
             Log.i(TAG, "Réglages : ip=$ip input=$input maxStartVolumePct=$maxStartVolumePct autoOff=$autoOff " +
-                "volumeRelay=$volumeRelay volumeStep=$volumeStep maxVolumePct=$maxVolumePct")
+                "volumeRelay=$volumeRelay volumeStep=$volumeStep maxVolumePct=$maxVolumePct " +
+                "screenIp=$screenIp screenDownPos=$screenDownPos screenUpPos=$screenUpPos")
         }
     }
 
