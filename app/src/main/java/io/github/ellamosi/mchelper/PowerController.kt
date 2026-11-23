@@ -14,8 +14,13 @@ class PowerController(private val state: MCDeviceState) {
 
     /** Allume l'ampli et attend qu'il soit réellement allumé. Renvoie true s'il est allumé. */
     fun turnOn(): Boolean {
-        if (hasRecentlyTurnedOff()) return false
+        // Ampli mis en veille il y a moins de 10 s : on attend la fin du délai au lieu d'abandonner.
+        lastShutdown?.let {
+            val wait = MIN_POWER_CYCLE_DELAY - (System.currentTimeMillis() - it)
+            if (wait > 0) { Log.i(TAG, "Attente ${wait} ms avant rallumage"); Thread.sleep(wait) }
+        }
         if (state.power() == "on") return true
+        Log.i(TAG, "Allumage de l'ampli")
         MCApi.turnOn()
         val deadline = System.currentTimeMillis() + WAKE_TIMEOUT_MS
         while (System.currentTimeMillis() < deadline) {
@@ -27,10 +32,8 @@ class PowerController(private val state: MCDeviceState) {
     }
 
     fun turnOff() {
+        Log.i(TAG, "Mise en veille de l'ampli")
         MCApi.turnOff()
         lastShutdown = System.currentTimeMillis()
     }
-
-    private fun hasRecentlyTurnedOff(): Boolean =
-        lastShutdown?.let { System.currentTimeMillis() - it < MIN_POWER_CYCLE_DELAY } ?: false
 }

@@ -43,7 +43,10 @@ object VolumeRelay {
 
     private fun apply(presses: Int) {
         val status = MCApi.getStatus()
-        if (status.optString("power") != "on") return   // ampli en veille : on ne fait rien
+        if (status.optString("power") != "on") {        // ampli en veille : on ne fait rien
+            Log.i(TAG, "Ampli en veille : volume ignoré")
+            return
+        }
         val current = status.optInt("volume", -1)
         if (current < 0) return
         val max = maxVolume ?: MCApi.getMaxVolume(status)?.also { maxVolume = it } ?: return
