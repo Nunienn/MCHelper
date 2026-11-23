@@ -33,7 +33,7 @@ object Config {
     private const val DEFAULT_VOLUME_RELAY = true
     private const val DEFAULT_VOLUME_STEP = 3          // crans d'ampli par appui (1 cran = 0,5 dB)
     private const val DEFAULT_MAX_VOLUME_PCT = 80      // plafond absolu via la télécommande
-    private const val DEFAULT_SCREEN_IP = "10.0.0.36"  // Shelly 2PM de l'écran ("off" = désactivé)
+    private const val DEFAULT_SCREEN_IP = "10.0.0.37"  // Shelly 2PM de l'écran ("off" = désactivé)
     private const val DEFAULT_SCREEN_DOWN_POS = 0      // position Shelly écran déroulé (0 = fermé)
     private const val DEFAULT_SCREEN_UP_POS = 100      // position Shelly écran remonté (100 = ouvert)
 

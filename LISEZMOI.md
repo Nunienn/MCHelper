@@ -71,7 +71,7 @@ Exemple : `adb shell am start-foreground-service -n io.github.ellamosi.mchelper/
 
 | Réglage | Rôle | Défaut |
 |---|---|---|
-| `screenIp` | IP du Shelly (`off` = écran non piloté) | 10.0.0.36 |
+| `screenIp` | IP du Shelly (`off` = écran non piloté) | 10.0.0.37 |
 | `screenDownPos` | Position écran descendu (0 = fin de course basse) | 0 |
 | `screenUpPos` | Position écran remonté (100 = fin de course haute) | 100 |
 
